@@ -1,8 +1,59 @@
 # FullDraggableDrawer
 
-```java
-// TODO
+Make the `DrawerLayout` can be dragged/pulled out in real-time within the range of fullscreen, like [Pure Writer](https://play.google.com/store/apps/details?id=com.drakeet.purewriter)：
+
+<img src="snapshot.jpg" width=360></img>
+
+_* Full demo video: https://t.me/PureWriter/549_
+
+## Getting started
+
+In your `build.gradle`:
+
+```groovy
+dependencies {
+  implementation 'com.drakeet.drawer:drawer:0.9.0'
+}
 ```
+
+## Usage
+
+Replace the main Layout of `DrawerLayout` with the `FullDraggableContainer`:
+
+```xml
+<androidx.drawerlayout.widget.DrawerLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:id="@+id/drawer"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent">
+
+  <!-- here 👇 -->
+  <com.drakeet.drawer.FullDraggableContainer
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- ... -->
+
+  </com.drakeet.drawer.FullDraggableContainer>
+
+  <FrameLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="left">
+
+    <!-- ... -->
+
+  </FrameLayout>
+
+</androidx.drawerlayout.widget.DrawerLayout>
+```
+
+**That's all, you're good to go!**
+
+## TODO
+
+- [ ] Add support for the right drawer / RTL
+- [ ] Add support for other kinds of drawer
 
 License
 -------

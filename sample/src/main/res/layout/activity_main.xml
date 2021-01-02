@@ -17,104 +17,25 @@
 
 <androidx.drawerlayout.widget.DrawerLayout
   xmlns:android="http://schemas.android.com/apk/res/android"
-  xmlns:app="http://schemas.android.com/apk/res-auto"
-  xmlns:tools="http://schemas.android.com/tools"
   android:id="@+id/drawer"
   android:layout_width="match_parent"
-  android:layout_height="match_parent"
-  android:fitsSystemWindows="true"
-  tools:context=".MainActivity"
-  tools:ignore="HardcodedText">
+  android:layout_height="match_parent">
 
+  <!-- here👇 -->
   <com.drakeet.drawer.FullDraggableContainer
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#F0F4C3">
+    android:layout_height="match_parent">
 
-    <LinearLayout
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:orientation="vertical">
-
-      <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:paddingVertical="64dp"
-        android:text="TextView:\n com.drakeet.drawer.FullDraggableContainer"
-        android:textColor="@color/black"
-        android:typeface="monospace" />
-
-      <HorizontalScrollView
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:background="#12000000">
-
-        <TextView
-          android:layout_width="wrap_content"
-          android:layout_height="match_parent"
-          android:gravity="center"
-          android:padding="64dp"
-          android:text="HorizontalScrollView HorizontalScrollView HorizontalScrollView HorizontalScrollView"
-          android:textColor="@color/black"
-          android:typeface="monospace" />
-
-      </HorizontalScrollView>
-
-      <androidx.viewpager.widget.ViewPager
-        android:id="@+id/viewPager"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
-
-        <TextView
-          android:layout_width="match_parent"
-          android:layout_height="match_parent"
-          android:gravity="center"
-          android:paddingVertical="64dp"
-          android:text="ViewPage1"
-          android:textColor="@color/black"
-          android:typeface="monospace" />
-
-        <TextView
-          android:layout_width="match_parent"
-          android:layout_height="match_parent"
-          android:gravity="center"
-          android:paddingVertical="64dp"
-          android:text="ViewPage2"
-          android:textColor="@color/black"
-          android:typeface="monospace" />
-
-      </androidx.viewpager.widget.ViewPager>
-
-      <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:background="#12000000"
-        android:orientation="horizontal"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
-
-    </LinearLayout>
+  <!-- ... -->
 
   </com.drakeet.drawer.FullDraggableContainer>
 
   <FrameLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_gravity="left"
-    android:layout_marginRight="28dp"
-    android:background="#C5CAE9"
-    android:fitsSystemWindows="false"
-    tools:ignore="RtlHardcoded">
+    android:layout_gravity="left">
 
-    <TextView
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:layout_gravity="center"
-      android:gravity="center"
-      android:text="Left drawer"
-      android:textColor="@color/black" />
+    <!-- ... -->
 
   </FrameLayout>
 

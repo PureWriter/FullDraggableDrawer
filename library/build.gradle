@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-plugins {
-  id 'com.android.library'
-}
+apply plugin: 'com.android.library'
+apply from: rootProject.file('gradle/gradle-mvn-push.gradle')
 
 android {
   compileSdkVersion 30
