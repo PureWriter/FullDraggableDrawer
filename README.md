@@ -4,7 +4,7 @@ Make the `DrawerLayout` can be dragged/pulled out in real-time within the range 
 
 <img src="snapshot.jpg" width=360></img>
 
-**_* Full demo video: https://t.me/PureWriter/549_**
+<b>_* Full demo video: https://t.me/PureWriter/549_</b>
 
 ## Getting started
 
