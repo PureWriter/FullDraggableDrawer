@@ -18,7 +18,7 @@ dependencies {
 
 ## Usage
 
-Replace the main Layout of `DrawerLayout` with the `FullDraggableContainer`:
+Replace the main Layout of `DrawerLayout` with the `FullDraggableContainer` (or you can just add it as a new wrapper/layer):
 
 ```xml
 <androidx.drawerlayout.widget.DrawerLayout
