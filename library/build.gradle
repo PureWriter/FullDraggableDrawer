@@ -22,7 +22,7 @@ android {
   compileSdkVersion 30
 
   defaultConfig {
-    minSdkVersion 19
+    minSdkVersion buildConfig.minSdkVersion
     consumerProguardFiles "consumer-rules.pro"
   }
 
