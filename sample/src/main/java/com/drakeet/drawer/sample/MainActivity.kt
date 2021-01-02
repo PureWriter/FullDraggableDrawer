@@ -37,6 +37,7 @@ import com.drakeet.multitype.MultiTypeAdapter
 import com.drakeet.multitype.ViewDelegate
 
 class MainActivity : AppCompatActivity() {
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_main)
