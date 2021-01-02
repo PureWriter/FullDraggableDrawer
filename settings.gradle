@@ -15,5 +15,5 @@
  */
 
 rootProject.name = "FullDraggableDrawer"
-include ':app'
+include ':sample'
 include ':library'
