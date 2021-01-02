@@ -36,7 +36,6 @@ import androidx.viewpager.widget.ViewPager
 import com.drakeet.multitype.MultiTypeAdapter
 import com.drakeet.multitype.ViewDelegate
 
-
 class MainActivity : AppCompatActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -55,23 +54,23 @@ class MainActivity : AppCompatActivity() {
 
     val drawer = findViewById<DrawerLayout>(R.id.drawer)
     drawer.addDrawerListener(object : DrawerLayout.DrawerListener {
-      override fun onDrawerSlide(p0: View, p1: Float) {
-        // items.add("onDrawerSlide($p1)")
+      override fun onDrawerSlide(drawerView: View, slideOffset: Float) {
+        // items.add("onDrawerSlide($slideOffset)")
         // adapter.notifyDataSetChanged()
       }
 
-      override fun onDrawerOpened(p0: View) {
+      override fun onDrawerOpened(drawerView: View) {
         items.add("onDrawerOpened()")
         adapter.notifyDataSetChanged()
       }
 
-      override fun onDrawerClosed(p0: View) {
+      override fun onDrawerClosed(drawerView: View) {
         items.add("onDrawerClosed()")
         adapter.notifyDataSetChanged()
       }
 
-      override fun onDrawerStateChanged(p0: Int) {
-        items.add("onDrawerStateChanged($p0)")
+      override fun onDrawerStateChanged(newState: Int) {
+        items.add("onDrawerStateChanged($newState)")
         adapter.notifyDataSetChanged()
       }
     })
@@ -99,9 +98,7 @@ class MainActivity : AppCompatActivity() {
       viewPager.offscreenPageLimit = count
     }
 
-    override fun instantiateItem(container: ViewGroup, position: Int): Any {
-      return container.getChildAt(position)
-    }
+    override fun instantiateItem(container: ViewGroup, position: Int): Any = container.getChildAt(position)
 
     override fun getCount(): Int = viewPager.childCount
 
