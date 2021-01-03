@@ -103,10 +103,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="start"
-    android:layout_marginRight="28dp"
+    android:layout_marginEnd="28dp"
     android:background="#C5CAE9"
-    android:fitsSystemWindows="false"
-    tools:ignore="RtlHardcoded">
+    android:fitsSystemWindows="false">
 
     <TextView
       android:layout_width="match_parent"
@@ -122,10 +121,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="end"
-    android:layout_marginRight="28dp"
+    android:layout_marginStart="28dp"
     android:background="#FFCCBC"
-    android:fitsSystemWindows="false"
-    tools:ignore="RtlHardcoded">
+    android:fitsSystemWindows="false">
 
     <TextView
       android:layout_width="match_parent"
