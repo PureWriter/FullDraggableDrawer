@@ -34,6 +34,6 @@ android {
 }
 
 dependencies {
-  api 'androidx.drawerlayout:drawerlayout:1.1.1'
+  compileOnly 'androidx.drawerlayout:drawerlayout:1.1.1'
   testImplementation 'junit:junit:4.13.1'
 }
