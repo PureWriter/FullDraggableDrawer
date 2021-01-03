@@ -46,12 +46,12 @@ public class FullDraggableHelper {
   private final int distanceThreshold;
   private final int xVelocityThreshold;
 
+  private int gravity = Gravity.NO_GRAVITY;
   private boolean isDraggingDrawer = false;
   private boolean shouldOpenDrawer = false;
 
   @Nullable
   private VelocityTracker velocityTracker = null;
-  private int gravity = Gravity.NO_GRAVITY;
 
   public FullDraggableHelper(@NonNull Context context, @NonNull Callback callback) {
     this.context = context;
