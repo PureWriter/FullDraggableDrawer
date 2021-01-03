@@ -37,6 +37,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 import static java.lang.Math.abs;
+import static java.util.Objects.requireNonNull;
 
 /**
  * TODO: Add support for the right drawer
@@ -61,6 +62,7 @@ public class FullDraggableContainer extends FrameLayout {
   @Nullable
   private VelocityTracker velocityTracker = null;
   private DrawerLayout drawerLayout;
+  private int gravity = Gravity.NO_GRAVITY;
 
   public FullDraggableContainer(@NonNull Context context) {
     this(context, null);
@@ -107,10 +109,10 @@ public class FullDraggableContainer extends FrameLayout {
         return false;
       }
       lastMotionX = x;
-      // TODO: Add support for the right drawer
-      intercepted = x > initialMotionX
-          && abs(x - initialMotionX) > touchSlop
-          && abs(x - initialMotionX) > abs(y - initialMotionY);
+      float diffX = x - initialMotionX;
+      intercepted = abs(diffX) > touchSlop
+        && abs(diffX) > abs(y - initialMotionY)
+        && isDrawerEnabled(diffX);
     }
     return intercepted;
   }
@@ -125,10 +127,10 @@ public class FullDraggableContainer extends FrameLayout {
         View child = group.getChildAt(i);
         if (child.getVisibility() != View.VISIBLE) continue;
         if (x + scrollX >= child.getLeft()
-            && x + scrollX < child.getRight()
-            && y + scrollY >= child.getTop()
-            && y + scrollY < child.getBottom()
-            && canNestedViewScroll(child, true, dx, x + scrollX - child.getLeft(), y + scrollY - child.getTop())) {
+          && x + scrollX < child.getRight()
+          && y + scrollY >= child.getTop()
+          && y + scrollY < child.getBottom()
+          && canNestedViewScroll(child, true, dx, x + scrollX - child.getLeft(), y + scrollY - child.getTop())) {
           return true;
         }
       }
@@ -143,19 +145,25 @@ public class FullDraggableContainer extends FrameLayout {
     int action = event.getActionMasked();
     switch (action) {
       case MotionEvent.ACTION_MOVE: {
-        if (drawerLayout.isDrawerOpen(Gravity.LEFT)) {
+        float diffX = x - initialMotionX;
+        if (isDrawerOpen() || !isDrawerEnabled(diffX)) {
           return false;
         }
-        float sx = x - initialMotionX;
-        if (sx > swipeSlop || isDraggingDrawer) {
+        float absDiffX = abs(diffX);
+        if (absDiffX > swipeSlop || isDraggingDrawer) {
           if (velocityTracker == null) {
             velocityTracker = VelocityTracker.obtain();
           }
           velocityTracker.addMovement(event);
           boolean lastDraggingDrawer = isDraggingDrawer;
           isDraggingDrawer = true;
-          shouldOpenDrawer = sx > distanceThreshold;
-          offsetDrawer(x - initialMotionX - swipeSlop);
+          shouldOpenDrawer = absDiffX > distanceThreshold;
+
+          // Not allowed to change direction in a process
+          if (gravity == Gravity.NO_GRAVITY) {
+            gravity = diffX > 0 ? Gravity.LEFT : Gravity.RIGHT;
+          }
+          offsetDrawer(gravity, absDiffX - swipeSlop);
 
           if (!lastDraggingDrawer) {
             notifyDrawerDragging();
@@ -169,20 +177,22 @@ public class FullDraggableContainer extends FrameLayout {
           if (velocityTracker != null) {
             velocityTracker.computeCurrentVelocity(1000);
             float xVelocity = velocityTracker.getXVelocity();
+            boolean fromLeft = (gravity == Gravity.LEFT);
             if (xVelocity > xVelocityThreshold) {
-              shouldOpenDrawer = true;
+              shouldOpenDrawer = fromLeft;
             } else if (xVelocity < -xVelocityThreshold) {
-              shouldOpenDrawer = false;
+              shouldOpenDrawer = !fromLeft;
             }
           }
           if (shouldOpenDrawer) {
-            openDrawer(Gravity.LEFT);
+            openDrawer(gravity);
           } else {
-            dismissDrawer(Gravity.LEFT);
+            dismissDrawer(gravity);
           }
         }
         shouldOpenDrawer = false;
         isDraggingDrawer = false;
+        gravity = Gravity.NO_GRAVITY;
         if (velocityTracker != null) {
           velocityTracker.recycle();
           velocityTracker = null;
@@ -190,6 +200,11 @@ public class FullDraggableContainer extends FrameLayout {
       }
     }
     return true;
+  }
+
+  @SuppressLint("RtlHardcoded")
+  private boolean isDrawerOpen() {
+    return drawerLayout.isDrawerOpen(Gravity.LEFT) || drawerLayout.isDrawerOpen(Gravity.RIGHT);
   }
 
   private void openDrawer(int gravity) {
@@ -200,8 +215,8 @@ public class FullDraggableContainer extends FrameLayout {
     drawerLayout.closeDrawer(gravity, true);
   }
 
-  private void offsetDrawer(float dx) {
-    setDrawerToOffset(dx);
+  private void offsetDrawer(int gravity, float dx) {
+    setDrawerToOffset(gravity, dx);
     drawerLayout.invalidate();
   }
 
@@ -228,11 +243,9 @@ public class FullDraggableContainer extends FrameLayout {
     }
   }
 
-  protected void setDrawerToOffset(float dx) {
-    @SuppressLint("RtlHardcoded")
-    View drawerView = findDrawerWithGravity(Gravity.LEFT);
-    // TODO: The drawerView may be null
-    float slideOffset = dx / drawerView.getWidth();
+  protected void setDrawerToOffset(int gravity, float dx) {
+    View drawerView = findDrawerWithGravity(gravity);
+    float slideOffset = dx / requireNonNull(drawerView).getWidth();
     try {
       Method method = DrawerLayout.class.getDeclaredMethod("moveDrawerToOffset", View.class, float.class);
       method.setAccessible(true);
@@ -245,6 +258,7 @@ public class FullDraggableContainer extends FrameLayout {
   }
 
   // Copied from DrawerLayout
+  @Nullable
   private View findDrawerWithGravity(int gravity) {
     final int absHorizontalGravity = GravityCompat.getAbsoluteGravity(gravity, ViewCompat.getLayoutDirection(drawerLayout)) & Gravity.HORIZONTAL_GRAVITY_MASK;
     final int childCount = drawerLayout.getChildCount();
@@ -262,6 +276,17 @@ public class FullDraggableContainer extends FrameLayout {
   private int getDrawerViewAbsoluteGravity(View drawerView) {
     final int gravity = ((DrawerLayout.LayoutParams) drawerView.getLayoutParams()).gravity;
     return GravityCompat.getAbsoluteGravity(gravity, ViewCompat.getLayoutDirection(drawerLayout));
+  }
+
+  @SuppressLint("RtlHardcoded")
+  private boolean isDrawerEnabled(float diffX) {
+    return diffX > 0 && hasUnlockedDrawer(Gravity.LEFT)
+      || diffX < 0 && hasUnlockedDrawer(Gravity.RIGHT);
+  }
+
+  private boolean hasUnlockedDrawer(int gravity) {
+    return drawerLayout.getDrawerLockMode(gravity) == DrawerLayout.LOCK_MODE_UNLOCKED
+      && findDrawerWithGravity(gravity) != null;
   }
 
   private int dipsToPixels(int dips) {
