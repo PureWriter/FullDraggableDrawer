@@ -52,7 +52,7 @@ Replace the main Layout of `DrawerLayout` with the `FullDraggableContainer` (or 
 
 ## TODO
 
-- [ ] Add support for the right drawer / RTL
+- [x] Add support for the right drawer / RTL
 - [ ] Add support for other kinds of drawer
 
 License

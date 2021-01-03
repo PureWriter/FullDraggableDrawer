@@ -102,7 +102,7 @@
   <FrameLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_gravity="left"
+    android:layout_gravity="start"
     android:layout_marginRight="28dp"
     android:background="#C5CAE9"
     android:fitsSystemWindows="false"
@@ -113,7 +113,26 @@
       android:layout_height="wrap_content"
       android:layout_gravity="center"
       android:gravity="center"
-      android:text="Left drawer"
+      android:text="drawer(start)"
+      android:textColor="@color/black" />
+
+  </FrameLayout>
+
+  <FrameLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="end"
+    android:layout_marginRight="28dp"
+    android:background="#C5CAE9"
+    android:fitsSystemWindows="false"
+    tools:ignore="RtlHardcoded">
+
+    <TextView
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center"
+      android:gravity="center"
+      android:text="drawer(end)"
       android:textColor="@color/black" />
 
   </FrameLayout>
