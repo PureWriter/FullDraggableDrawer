@@ -159,7 +159,7 @@ public class FullDraggableContainer extends FrameLayout {
           isDraggingDrawer = true;
           shouldOpenDrawer = absDiffX > distanceThreshold;
 
-          // Not allow to change direction in a process
+          // Not allowed to change direction in a process
           if (gravity == Gravity.NO_GRAVITY) {
             gravity = diffX > 0 ? Gravity.LEFT : Gravity.RIGHT;
           }
