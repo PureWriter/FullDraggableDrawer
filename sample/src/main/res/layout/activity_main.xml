@@ -123,7 +123,7 @@
     android:layout_height="match_parent"
     android:layout_gravity="end"
     android:layout_marginRight="28dp"
-    android:background="#C5CAE9"
+    android:background="#FFCCBC"
     android:fitsSystemWindows="false"
     tools:ignore="RtlHardcoded">
 
