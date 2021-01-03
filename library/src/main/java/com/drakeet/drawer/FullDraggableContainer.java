@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.drakeet.drawer;
 
 import android.annotation.SuppressLint;
@@ -21,10 +20,7 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.MotionEvent;
-import android.view.VelocityTracker;
 import android.view.View;
-import android.view.ViewConfiguration;
-import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.widget.FrameLayout;
 import androidx.annotation.NonNull;
@@ -36,33 +32,17 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
 
-import static java.lang.Math.abs;
 import static java.util.Objects.requireNonNull;
 
 /**
- * TODO: Add support for the right drawer
- * TODO: Add support for other kinds of drawer
- *
  * @author Drakeet Xu
  */
-public class FullDraggableContainer extends FrameLayout {
+public class FullDraggableContainer extends FrameLayout implements FullDraggableHelper.Callback {
 
-  private float initialMotionX;
-  private float initialMotionY;
-  private float lastMotionX;
-  private float lastMotionY;
-  private final int touchSlop;
-  private final int swipeSlop;
-  private final int distanceThreshold;
-  private final int xVelocityThreshold;
+  @NonNull
+  private final FullDraggableHelper helper;
 
-  private boolean isDraggingDrawer = false;
-  private boolean shouldOpenDrawer = false;
-
-  @Nullable
-  private VelocityTracker velocityTracker = null;
   private DrawerLayout drawerLayout;
-  private int gravity = Gravity.NO_GRAVITY;
 
   public FullDraggableContainer(@NonNull Context context) {
     this(context, null);
@@ -74,10 +54,7 @@ public class FullDraggableContainer extends FrameLayout {
 
   public FullDraggableContainer(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
     super(context, attrs, defStyleAttr);
-    touchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
-    swipeSlop = dipsToPixels(8);
-    distanceThreshold = dipsToPixels(80);
-    xVelocityThreshold = dipsToPixels(150);
+    helper = new FullDraggableHelper(context, this);
   }
 
   @Override
@@ -96,131 +73,50 @@ public class FullDraggableContainer extends FrameLayout {
 
   @Override
   public boolean onInterceptTouchEvent(MotionEvent event) {
-    boolean intercepted = false;
-    int action = event.getActionMasked();
-    float x = event.getX();
-    float y = event.getY();
-    if (action == MotionEvent.ACTION_DOWN) {
-      lastMotionX = initialMotionX = x;
-      lastMotionY = initialMotionY = y;
-      return false;
-    } else if (action == MotionEvent.ACTION_MOVE) {
-      if (canNestedViewScroll(this, false, (int) (x - lastMotionX), (int) x, (int) y)) {
-        return false;
-      }
-      lastMotionX = x;
-      float diffX = x - initialMotionX;
-      intercepted = abs(diffX) > touchSlop
-        && abs(diffX) > abs(y - initialMotionY)
-        && isDrawerEnabled(diffX);
-    }
-    return intercepted;
-  }
-
-  private boolean canNestedViewScroll(View view, boolean checkSelf, int dx, int x, int y) {
-    if (view instanceof ViewGroup) {
-      ViewGroup group = (ViewGroup) view;
-      int scrollX = view.getScrollX();
-      int scrollY = view.getScrollY();
-      int count = group.getChildCount();
-      for (int i = count - 1; i >= 0; i--) {
-        View child = group.getChildAt(i);
-        if (child.getVisibility() != View.VISIBLE) continue;
-        if (x + scrollX >= child.getLeft()
-          && x + scrollX < child.getRight()
-          && y + scrollY >= child.getTop()
-          && y + scrollY < child.getBottom()
-          && canNestedViewScroll(child, true, dx, x + scrollX - child.getLeft(), y + scrollY - child.getTop())) {
-          return true;
-        }
-      }
-    }
-    return checkSelf && view.canScrollHorizontally(-dx);
+    return helper.onInterceptTouchEvent(event);
   }
 
   @Override
-  @SuppressLint({ "RtlHardcoded", "ClickableViewAccessibility" })
+  @SuppressLint("ClickableViewAccessibility")
   public boolean onTouchEvent(MotionEvent event) {
-    float x = event.getX();
-    int action = event.getActionMasked();
-    switch (action) {
-      case MotionEvent.ACTION_MOVE: {
-        float diffX = x - initialMotionX;
-        if (isDrawerOpen() || !isDrawerEnabled(diffX)) {
-          return false;
-        }
-        float absDiffX = abs(diffX);
-        if (absDiffX > swipeSlop || isDraggingDrawer) {
-          if (velocityTracker == null) {
-            velocityTracker = VelocityTracker.obtain();
-          }
-          velocityTracker.addMovement(event);
-          boolean lastDraggingDrawer = isDraggingDrawer;
-          isDraggingDrawer = true;
-          shouldOpenDrawer = absDiffX > distanceThreshold;
-
-          // Not allowed to change direction in a process
-          if (gravity == Gravity.NO_GRAVITY) {
-            gravity = diffX > 0 ? Gravity.LEFT : Gravity.RIGHT;
-          }
-          offsetDrawer(gravity, absDiffX - swipeSlop);
-
-          if (!lastDraggingDrawer) {
-            notifyDrawerDragging();
-          }
-        }
-        return isDraggingDrawer;
-      }
-      case MotionEvent.ACTION_CANCEL:
-      case MotionEvent.ACTION_UP: {
-        if (isDraggingDrawer) {
-          if (velocityTracker != null) {
-            velocityTracker.computeCurrentVelocity(1000);
-            float xVelocity = velocityTracker.getXVelocity();
-            boolean fromLeft = (gravity == Gravity.LEFT);
-            if (xVelocity > xVelocityThreshold) {
-              shouldOpenDrawer = fromLeft;
-            } else if (xVelocity < -xVelocityThreshold) {
-              shouldOpenDrawer = !fromLeft;
-            }
-          }
-          if (shouldOpenDrawer) {
-            openDrawer(gravity);
-          } else {
-            dismissDrawer(gravity);
-          }
-        }
-        shouldOpenDrawer = false;
-        isDraggingDrawer = false;
-        gravity = Gravity.NO_GRAVITY;
-        if (velocityTracker != null) {
-          velocityTracker.recycle();
-          velocityTracker = null;
-        }
-      }
-    }
-    return true;
+    return helper.onTouchEvent(event);
   }
 
-  @SuppressLint("RtlHardcoded")
-  private boolean isDrawerOpen() {
-    return drawerLayout.isDrawerOpen(Gravity.LEFT) || drawerLayout.isDrawerOpen(Gravity.RIGHT);
+  @NonNull
+  @Override
+  public View getDrawerMainContainer() {
+    return this;
   }
 
-  private void openDrawer(int gravity) {
-    drawerLayout.openDrawer(gravity, true);
+  @Override
+  public boolean isDrawerOpen(int gravity) {
+    return drawerLayout.isDrawerOpen(gravity);
   }
 
-  private void dismissDrawer(int gravity) {
-    drawerLayout.closeDrawer(gravity, true);
+  @Override
+  public boolean hasEnabledDrawer(int gravity) {
+    return drawerLayout.getDrawerLockMode(gravity) == DrawerLayout.LOCK_MODE_UNLOCKED
+      && findDrawerWithGravity(gravity) != null;
   }
 
-  private void offsetDrawer(int gravity, float dx) {
-    setDrawerToOffset(gravity, dx);
+  @Override
+  public void offsetDrawer(int gravity, float offset) {
+    setDrawerToOffset(gravity, offset);
     drawerLayout.invalidate();
   }
 
-  private void notifyDrawerDragging() {
+  @Override
+  public void smoothOpenDrawer(int gravity) {
+    drawerLayout.openDrawer(gravity, true);
+  }
+
+  @Override
+  public void smoothCloseDrawer(int gravity) {
+    drawerLayout.closeDrawer(gravity, true);
+  }
+
+  @Override
+  public void onDrawerDragging() {
     List<DrawerLayout.DrawerListener> drawerListeners = getDrawerListeners();
     if (drawerListeners != null) {
       int listenerCount = drawerListeners.size();
@@ -243,13 +139,13 @@ public class FullDraggableContainer extends FrameLayout {
     }
   }
 
-  protected void setDrawerToOffset(int gravity, float dx) {
+  protected void setDrawerToOffset(int gravity, float offset) {
     View drawerView = findDrawerWithGravity(gravity);
-    float slideOffset = dx / requireNonNull(drawerView).getWidth();
+    float slideOffsetPercent = offset / requireNonNull(drawerView).getWidth();
     try {
       Method method = DrawerLayout.class.getDeclaredMethod("moveDrawerToOffset", View.class, float.class);
       method.setAccessible(true);
-      method.invoke(drawerLayout, drawerView, slideOffset);
+      method.invoke(drawerLayout, drawerView, slideOffsetPercent);
       drawerView.setVisibility(VISIBLE);
     } catch (Exception e) {
       // throw to let developer know the api is changed
@@ -276,21 +172,5 @@ public class FullDraggableContainer extends FrameLayout {
   private int getDrawerViewAbsoluteGravity(View drawerView) {
     final int gravity = ((DrawerLayout.LayoutParams) drawerView.getLayoutParams()).gravity;
     return GravityCompat.getAbsoluteGravity(gravity, ViewCompat.getLayoutDirection(drawerLayout));
-  }
-
-  @SuppressLint("RtlHardcoded")
-  private boolean isDrawerEnabled(float diffX) {
-    return diffX > 0 && hasUnlockedDrawer(Gravity.LEFT)
-      || diffX < 0 && hasUnlockedDrawer(Gravity.RIGHT);
-  }
-
-  private boolean hasUnlockedDrawer(int gravity) {
-    return drawerLayout.getDrawerLockMode(gravity) == DrawerLayout.LOCK_MODE_UNLOCKED
-      && findDrawerWithGravity(gravity) != null;
-  }
-
-  private int dipsToPixels(int dips) {
-    float scale = getContext().getResources().getDisplayMetrics().density;
-    return (int) (dips * scale + 0.5f);
   }
 }
