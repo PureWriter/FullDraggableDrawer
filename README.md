@@ -1,5 +1,8 @@
 # FullDraggableDrawer
 
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/drakeet/MultiType/blob/master/LICENSE)
+![maven-central](https://img.shields.io/maven-central/v/com.drakeet.drawer/drawer.svg)
+
 Make the `DrawerLayout` can be dragged/pulled out in real-time within the range of fullscreen, like [Pure Writer](https://play.google.com/store/apps/details?id=com.drakeet.purewriter)：
 
 <img src="snapshot.jpg" width=360></img>
