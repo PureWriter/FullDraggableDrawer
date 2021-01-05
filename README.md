@@ -59,7 +59,7 @@ See `com.drakeet.drawer.FullDraggableHelper`
 ## TODO
 
 - [x] Add support for the right drawer / RTL
-- [x] Add support for other kinds of drawer
+- [x] Add support for other kinds of drawers
 
 License
 -------
