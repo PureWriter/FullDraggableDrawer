@@ -25,6 +25,7 @@ import android.view.ViewParent;
 import android.widget.FrameLayout;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.math.MathUtils;
 import androidx.core.view.GravityCompat;
 import androidx.core.view.ViewCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -141,7 +142,7 @@ public class FullDraggableContainer extends FrameLayout implements FullDraggable
 
   protected void setDrawerToOffset(int gravity, float offset) {
     View drawerView = findDrawerWithGravity(gravity);
-    float slideOffsetPercent = offset / requireNonNull(drawerView).getWidth();
+    float slideOffsetPercent = MathUtils.clamp(offset / requireNonNull(drawerView).getWidth(), 0f, 1f);
     try {
       Method method = DrawerLayout.class.getDeclaredMethod("moveDrawerToOffset", View.class, float.class);
       method.setAccessible(true);
