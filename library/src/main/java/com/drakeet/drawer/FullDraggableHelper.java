@@ -111,6 +111,10 @@ public class FullDraggableHelper {
             // Means that the user first moves in one direction,
             // and then completely close the drawer in the reverse direction.
             // At this time, absDiffX should not be distributed anymore.
+            // So for this case, we are returning false,
+            // and set the initialMotionX to the direction changed point
+            // to support quick dragging out with the original direction.
+            initialMotionX = x;
             return false;
           }
 
