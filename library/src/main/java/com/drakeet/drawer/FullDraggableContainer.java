@@ -122,7 +122,7 @@ public class FullDraggableContainer extends FrameLayout implements FullDraggable
     if (drawerListeners != null) {
       int listenerCount = drawerListeners.size();
       for (int i = listenerCount - 1; i >= 0; --i) {
-        ((DrawerLayout.DrawerListener) drawerListeners.get(i)).onDrawerStateChanged(DrawerLayout.STATE_DRAGGING);
+        drawerListeners.get(i).onDrawerStateChanged(DrawerLayout.STATE_DRAGGING);
       }
     }
   }
