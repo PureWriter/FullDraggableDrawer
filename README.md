@@ -15,7 +15,7 @@ In your `build.gradle`:
 
 ```groovy
 dependencies {
-  implementation 'com.drakeet.drawer:drawer:1.0.1'
+  implementation 'com.drakeet.drawer:drawer:1.0.2'
   // Optional: No need if you just use the FullDraggableHelper
   implementation 'androidx.drawerlayout:drawerlayout:1.1.1'
 }
