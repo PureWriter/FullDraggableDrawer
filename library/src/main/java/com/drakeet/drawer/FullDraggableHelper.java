@@ -107,7 +107,17 @@ public class FullDraggableHelper {
           // Not allowed to change direction in a process
           if (gravity == Gravity.NO_GRAVITY) {
             gravity = diffX > 0 ? Gravity.LEFT : Gravity.RIGHT;
+          } else if ((gravity == Gravity.LEFT && diffX < 0) || (gravity == Gravity.RIGHT && diffX > 0)) {
+            // Means that the motion first moves in one direction,
+            // and then completely close the drawer in the reverse direction.
+            // At this time, absDiffX should not be distributed anymore.
+            // So for this case, we are returning false,
+            // and set the initialMotionX to the direction changed point
+            // to support quick dragging out with the original direction.
+            initialMotionX = x;
+            return false;
           }
+
           callback.offsetDrawer(gravity, absDiffX - swipeSlop);
 
           if (!lastDraggingDrawer) {

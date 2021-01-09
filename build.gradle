@@ -17,8 +17,8 @@
 buildscript {
 
   ext.kotlinVersion = '1.4.21'
-  ext.buildConfig = ['versionCode'      : 4,
-                     'versionName'      : "1.0.1",
+  ext.buildConfig = ['versionCode'      : 5,
+                     'versionName'      : "1.0.2",
                      'compileSdkVersion': 30,
                      'minSdkVersion'    : 19,
                      'targetSdkVersion' : 30]
