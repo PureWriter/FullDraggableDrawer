@@ -1,4 +1,4 @@
--keepclassmembers class androidx.drawerlayout.widget.DrawerLayout {
-    private mListeners;
+-keepclassmembernames class androidx.drawerlayout.widget.DrawerLayout {
+    private java.util.List mListeners;
     void moveDrawerToOffset(android.view.View, float);
 }
